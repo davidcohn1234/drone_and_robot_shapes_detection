@@ -57,7 +57,7 @@ def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name):
     cv2.destroyAllWindows()
     print(f'Finished detecting shapes on folder {input_folder_full_path}')
 
-    frame_rate = 5
+    frame_rate = 20
     video_path = videos_output_folder + '/' + folder_name + '.avi'
     print(f'Creating video {video_path}')
     common_utils.create_video(images_output_folder, 'jpg', video_path, frame_rate)
