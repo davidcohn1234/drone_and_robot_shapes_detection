@@ -24,7 +24,7 @@ def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name):
         sd = ShapeDetectorContours()
     else:
         sd = ShapeDetectorYolo()
-    input_folder_full_path = f'../input_data/images/' + folder_name
+    input_folder_full_path = f'./input_data/images/' + folder_name
     print()
     print(f'Start detecting shapes on folder {input_folder_full_path}')
     jpg_files = sorted(glob.glob(input_folder_full_path + '/*.jpg'))

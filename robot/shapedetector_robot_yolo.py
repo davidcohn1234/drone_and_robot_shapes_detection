@@ -32,7 +32,7 @@ class ShapeDetectorYolo:
                                    self.pink_color_data]
         self.model = torch.hub.load('ultralytics/yolov5', 'custom', path='./weights_simon_grayscale.pt')
         self.model.conf = 0.8
-        self.zip_folder = '..'
+        self.zip_folder = '.'
         common_utils.download_input_images_from_google_drive(zip_folder=self.zip_folder,
                                                              zip_file_id='1dimHaktpjQSFCEgG3S29L_5tkH82aSN3')
         common_utils.extract_frames_from_videos(self.zip_folder + '/' + 'input_data')
