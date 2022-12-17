@@ -4,8 +4,9 @@ import glob
 from enum import Enum
 from shapedetector_robot_yolo import ShapeDetectorYolo
 from shapedetector_robot_contours import ShapeDetectorContours
-import common_utils
 import sys
+sys.path.append('../')
+import common_utils
 
 
 class ShapeDetectionType(Enum):
@@ -53,7 +54,7 @@ def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name):
         cv2.imshow('rgb_image_with_shapes_data', rgb_image_with_shapes_data)
         key = cv2.waitKey(frame_milliseconds) & 0xFF
         if key == ord('q'):
-            break
+            return
     cv2.destroyAllWindows()
     print(f'Finished detecting shapes on folder {input_folder_full_path}')
 

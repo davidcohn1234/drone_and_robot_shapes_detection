@@ -2,8 +2,10 @@ import cv2
 import glob
 from shapedetector_tello import ShapeDetector
 import os
-import common_utils
 import sys
+sys.path.append('../')
+import common_utils
+
 
 def create_empty_output_folder(images_output_folder):
     isExist = os.path.exists(images_output_folder)
@@ -67,9 +69,11 @@ def detect_shapes_on_frames_from_folder(folder_name):
         file_full_path = "{}/{:05d}.jpg".format(images_output_folder, frame_index+1)
         cv2.imwrite(file_full_path, rgb_image)
         cv2.imshow('rgb_image', rgb_image)
-        cv2.waitKey(frame_milliseconds)
+        key = cv2.waitKey(frame_milliseconds) & 0xFF
+        if key == ord('q'):
+            return
 
-    frame_rate = 5
+    frame_rate = 20
     video_path = videos_output_folder + '/' + folder_name + '.avi'
     print(f'Creating video {video_path}')
     common_utils.create_video(images_output_folder, 'jpg', video_path, frame_rate)
