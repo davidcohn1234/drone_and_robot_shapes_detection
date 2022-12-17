@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 import torch
+import sys
+sys.path.append('../')
 import common_utils
 
 class ShapeDetectorYolo:
