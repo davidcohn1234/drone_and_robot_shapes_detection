@@ -2,6 +2,7 @@ import cv2
 import glob
 from shapedetector_tello import ShapeDetector
 import os
+import common_utils
 
 def create_empty_output_folder(images_output_folder):
     isExist = os.path.exists(images_output_folder)
@@ -22,8 +23,12 @@ def main():
     #jpg_files = [image_full_path]
     frame_milliseconds = 1
 
-    images_output_folder = './output_images/' + folder_name
+    main_output_folder = './output'
+    main_images_output_folder = main_output_folder + '/' + 'images'
+    videos_output_folder = main_output_folder + '/' + 'videos'
+    images_output_folder = main_images_output_folder + '/' + folder_name
     create_empty_output_folder(images_output_folder)
+    create_empty_output_folder(videos_output_folder)
 
     for frame_index, jpg_file in enumerate(jpg_files):
         rgb_image = cv2.imread(jpg_file)
@@ -63,5 +68,11 @@ def main():
         cv2.imwrite(file_full_path, rgb_image)
         cv2.imshow('rgb_image', rgb_image)
         cv2.waitKey(frame_milliseconds)
+
+    frame_rate = 5
+    video_path = videos_output_folder + '/' + folder_name + '.avi'
+    print(f'Creating video {video_path}')
+    common_utils.create_video(images_output_folder, 'jpg', video_path, frame_rate)
+    print(f'Finised creating video {video_path}')
 
 main()
