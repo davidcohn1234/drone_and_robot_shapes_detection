@@ -5,6 +5,7 @@ from enum import Enum
 from shapedetector_robot_yolo import ShapeDetectorYolo
 from shapedetector_robot_contours import ShapeDetectorContours
 import common_utils
+import sys
 
 
 class ShapeDetectionType(Enum):
@@ -31,8 +32,12 @@ def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name):
     jpg_files = sorted(glob.glob(input_folder_full_path + '/*.jpg'))
     frame_milliseconds = 1
     main_output_folder = './output'
-    main_images_output_folder = main_output_folder + '/' + 'images'
-    videos_output_folder = main_output_folder + '/' + 'videos'
+    if shape_detection_type == ShapeDetectionType.DETECT_SHAPE_USING_CONTOURS:
+        main_output_folder_with_detection_type = main_output_folder + '/contours'
+    else:
+        main_output_folder_with_detection_type = main_output_folder + '/yolo'
+    main_images_output_folder = main_output_folder_with_detection_type + '/' + 'images'
+    videos_output_folder = main_output_folder_with_detection_type + '/' + 'videos'
     images_output_folder = main_images_output_folder + '/' + folder_name
     create_empty_output_folder(images_output_folder)
     create_empty_output_folder(videos_output_folder)
@@ -59,8 +64,9 @@ def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name):
     print(f'Finised creating video {video_path}')
 
 def main():
-    folder_name = 'robomaster_ep_pov'
-    shape_detection_type = ShapeDetectionType.DETECT_SHAPE_USING_CONTOURS
+    folder_name = sys.argv[1]
+    shape_detection_type_str = sys.argv[2]
+    shape_detection_type = getattr(ShapeDetectionType, shape_detection_type_str)
     detect_shapes_on_frames_from_folder(shape_detection_type, folder_name)
 
 main()

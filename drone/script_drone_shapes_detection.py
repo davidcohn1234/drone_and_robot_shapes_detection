@@ -3,6 +3,7 @@ import glob
 from shapedetector_tello import ShapeDetector
 import os
 import common_utils
+import sys
 
 def create_empty_output_folder(images_output_folder):
     isExist = os.path.exists(images_output_folder)
@@ -75,7 +76,7 @@ def detect_shapes_on_frames_from_folder(folder_name):
     print(f'Finised creating video {video_path}')
 
 def main():
-    folder_name = '012_mix'
+    folder_name = sys.argv[1]
     detect_shapes_on_frames_from_folder(folder_name)
 
 main()
