@@ -1,26 +1,12 @@
-import time
-
 import cv2
 import numpy as np
 import imutils
-from enum import Enum
-from pytesseract import pytesseract
-import nltk
 from imutils import object_detection
 import math
 import common_utils
 
 class ShapeDetector:
-    class ImageDateType(Enum):
-        NO_TYPE = 0
-        QR_COLORS_ONLY = 1
-        QR_SHAPES_ONLY = 2
-        SHAPES_AND_COLORS = 3
-        WORDS_SHAPES_NAMES = 4
-        WORDS_COLORS_NAMES = 5
-
     def __init__(self):
-        self.color_name_to_rgb = {'name': 'brown', 'rgb_color': (19, 69, 139)}
         self.colors_name_to_rgb = [
             {'name': 'brown', 'rgb_color': (19, 69, 139)},
             {'name': 'yellow', 'rgb_color': (0, 255, 255)},
@@ -31,39 +17,32 @@ class ShapeDetector:
             {'name': 'blue', 'rgb_color': (180, 10, 0)},
             {'name': 'magenta', 'rgb_color': (255, 0, 255)}]
 
-        self.brown_color_info_tello_without_stick = {"name": 'brown', "lower": (0, 10, 33), "upper": (15, 162, 131),
+        self.brown_color_data = {"name": 'brown', "lower": (0, 10, 33), "upper": (15, 162, 131),
                                                      "rgb_color": (19, 69, 139)}
-        self.yellow_color_info_tello_without_stick = {"name": 'yellow', "lower": (24, 64, 85), "upper": (46, 255, 187),
+        self.yellow_color_data = {"name": 'yellow', "lower": (24, 64, 85), "upper": (46, 255, 187),
                                                       "rgb_color": (0, 255, 255)}
-        self.orange_color_info_tello_without_stick = {"name": 'orange', "lower": (11, 161, 119), "upper": (21, 255, 154),
+        self.orange_color_data = {"name": 'orange', "lower": (11, 161, 119), "upper": (21, 255, 154),
                                                       "rgb_color": (0, 165, 255)}
-        # ', "lower": (15, 231, 119), "upper": (21, 255, 130),
-        # orange_RGB(R=[113: 255], G = [102:255], B = [0:85])
-
-        # self.orange_color_info_tello_without_stick = {"name": 'orange', "lower": (7, 96, 112), "upper": (22, 255, 195),
-        #                                               "rgb_color": (0, 165, 255)}
-        # self.red_color_info_tello_without_stick = {"name": 'red', "lower": (0, 196, 45), "upper": (12, 255, 171),
-        #                                            "rgb_color": (0, 0, 255)}
-        self.red_color_info_tello_without_stick = {"name": 'red', "lower": (0, 91, 84), "upper": (11, 235, 151),
+        self.red_color_data = {"name": 'red', "lower": (0, 91, 84), "upper": (11, 235, 151),
                                                    "rgb_color": (0, 0, 255)}
-        self.purple_color_info_tello_without_stick = {"name": 'purple', "lower": (120, 59, 65),
+        self.purple_color_data = {"name": 'purple', "lower": (120, 59, 65),
                                                       "upper": (140, 191, 180), "rgb_color": (200, 0, 119)}
-        self.green_color_info_tello_without_stick = {"name": 'green', "lower": (38, 81, 43), "upper": (99, 255, 93),
+        self.green_color_data = {"name": 'green', "lower": (38, 81, 43), "upper": (99, 255, 93),
                                                      "rgb_color": (0, 255, 0)}
-        self.blue_color_info_tello_without_stick = {"name": 'blue', "lower": (40, 91, 81), "upper": (120, 255, 248),
+        self.blue_color_data = {"name": 'blue', "lower": (40, 91, 81), "upper": (120, 255, 248),
                                                     "rgb_color": (180, 10, 0)}
-        self.pink_color_info_tello_without_stick = {"name": 'pink', "lower": (141, 61, 120),
+        self.pink_color_data = {"name": 'pink', "lower": (141, 61, 120),
                                                        "upper": (181, 195, 206), "rgb_color": (255, 0, 255)}
-        self.unknown_color_info = {"name": 'unknown', "lower": (0, 0, 0), "upper": (0, 0, 0), "rgb_color": (0, 0, 0)}
+        self.unknown_color_data = {"name": 'unknown', "lower": (0, 0, 0), "upper": (0, 0, 0), "rgb_color": (0, 0, 0)}
 
-        self.colors_ranges_info_tello_without_stick = [self.brown_color_info_tello_without_stick,
-                                                       self.yellow_color_info_tello_without_stick,
-                                                       self.orange_color_info_tello_without_stick,
-                                                       self.red_color_info_tello_without_stick,
-                                                       self.purple_color_info_tello_without_stick,
-                                                       self.green_color_info_tello_without_stick,
-                                                       self.blue_color_info_tello_without_stick,
-                                                       self.pink_color_info_tello_without_stick]
+        self.colors_ranges_data = [self.brown_color_data,
+                                   self.yellow_color_data,
+                                   self.orange_color_data,
+                                   self.red_color_data,
+                                   self.purple_color_data,
+                                   self.green_color_data,
+                                   self.blue_color_data,
+                                   self.pink_color_data]
 
         self.max_screen_width = 750
         self.min_screen_width = 200
@@ -79,7 +58,6 @@ class ShapeDetector:
 
         self.shapes_types = ['circle', 'octagon', 'pentagon', 'rectangle', 'square', 'rhombus', 'star', 'triangle']
         self.template_gray_images = self.create_template_gray_images(self.shapes_types)
-        self.detect = cv2.QRCodeDetector()
         common_utils.download_input_images_from_google_drive(zip_folder='.', zip_file_id='1dimHaktpjQSFCEgG3S29L_5tkH82aSN3')
 
     def combine_shapes_boxes_into_a_single_list(self, shapes_boxes):
@@ -313,7 +291,7 @@ class ShapeDetector:
         color_data = {'name': None, 'rgb_color': None}
         rgb_sub_image = self.get_sub_image_by_box(rgb_image, box)
         color_code = cv2.COLOR_BGR2HSV
-        colors_ranges_info = self.colors_ranges_info_tello_without_stick
+        colors_ranges_info = self.colors_ranges_data
         num_of_colors = len(colors_ranges_info)
         colors_num_of_pixels = np.zeros([num_of_colors])
         for index, single_color_range_info in enumerate(colors_ranges_info):
@@ -340,58 +318,6 @@ class ShapeDetector:
             if val['name'] == color_name:
                 return val['rgb_color']
         return None
-
-    def get_qr_colors_only_frame_data(self, rgb_image, qr_data, screen_data):
-        self.image_data['screen_data'] = screen_data
-        self.image_data['image_data_type'] = self.ImageDateType.QR_COLORS_ONLY
-        shapes_data = []
-        for color_name in qr_data:
-            color_rgb = self.get_color_rgb_by_its_name(color_name)
-            shape_color_data = {'name': color_name, 'rgb_color': color_rgb}
-            single_shape_data = {'shape_name': None,
-                                 'shape_color_data': shape_color_data,
-                                 'shape_box': None,
-                                 'shape_box_dict': None,
-                                 'small_shape_box_for_color_detection': None}
-            shapes_data.append(single_shape_data)
-        self.image_data['shapes_data'] = shapes_data
-        return self.image_data
-
-
-    def get_qr_shapes_only_frame_data(self, rgb_image, qr_data, screen_data):
-        self.image_data['screen_data'] = screen_data
-        self.image_data['image_data_type'] = self.ImageDateType.QR_SHAPES_ONLY
-        shapes_data = []
-        for shape_name in qr_data:
-            shape_color_data = {'name': None, 'rgb_color': None}
-            single_shape_data = {'shape_name': shape_name,
-                                 'shape_color_data': shape_color_data,
-                                 'shape_box': None,
-                                 'shape_box_dict': None,
-                                 'small_shape_box_for_color_detection': None}
-            shapes_data.append(single_shape_data)
-        self.image_data['shapes_data'] = shapes_data
-        return self.image_data
-
-    def filter_words_by_list(self, list_text_in_image, possible_words):
-        num_of_allowed_mistaken_letters = 0
-        num_of_possible_words = len(possible_words)
-        filtered_list_text_in_image = []
-        for text_in_image in list_text_in_image:
-            text_in_image = text_in_image.lower()
-            list_dists = np.zeros(num_of_possible_words)
-            for index, possible_word in enumerate(possible_words):
-                current_dist = nltk.edit_distance(text_in_image, possible_word)
-                list_dists[index] = current_dist
-            min_dist = np.min(list_dists)
-            min_index = np.argmin(list_dists)
-            min_possible_word = possible_words[min_index]
-            if min_dist <= num_of_allowed_mistaken_letters:
-                print(min_dist)
-                filtered_list_text_in_image.append(text_in_image)
-        return filtered_list_text_in_image
-
-
 
     def get_shape_in_the_middle_of_the_frame(self, rgb_frame, shapes_data, ratio_x):
         [frame_height, frame_width, channels] = rgb_frame.shape
@@ -913,23 +839,6 @@ class ShapeDetector:
         mask = cv2.inRange(hsv_frame, colorLower, colorUpper)
         num_of_pixels = cv2.countNonZero(mask)
         return num_of_pixels
-
-    # def get_shape_color(self, image_with_approx_single_color):
-    #     colorCode = cv2.COLOR_BGR2HSV
-    #     colors_ranges_info = self.colors_ranges_info_tello_without_stick
-    #     num_of_colors = len(colors_ranges_info)
-    #     colors_num_of_pixels = np.zeros([num_of_colors])
-    #     for index, single_color_range_info in enumerate(colors_ranges_info):
-    #         lower = single_color_range_info["lower"]
-    #         upper = single_color_range_info["upper"]
-    #         single_color_num_of_pixels = self.count_pixels_in_color_range(lower, upper, image_with_approx_single_color,
-    #                                                                       colorCode)
-    #         colors_num_of_pixels[index] = single_color_num_of_pixels
-    #     max_index = colors_num_of_pixels.argmax()
-    #     shape_color_data = colors_ranges_info[max_index]
-    #     if np.sum(colors_num_of_pixels) == 0:
-    #         return self.unknown_color_info
-    #     return shape_color_data
 
     def detect_shape_color(self, resized_rgb_image_with_single_shape_without_border,
                            shape_contour_with_max_vertices):
