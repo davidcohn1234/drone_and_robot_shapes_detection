@@ -584,7 +584,7 @@ def detect_shape_scores(shape_box, gray_image_with_single_shape, template_gray_i
 
 
 def main():
-    folder_name = 'mix'
+    folder_name = '012_mix'
     input_file_name = '00542.jpg'
 
 
@@ -710,7 +710,7 @@ def main():
 
         if image_data['image_data_type'] == sd.ImageDateType.SHAPES_AND_COLORS:
             rgb_image = sd.draw_shapes_boxes_on_image(rgb_image, shapes_boxes)
-            rgb_image = sd.draw_shapes_boxes_on_image(rgb_image, small_shapes_boxes_for_color_detection)
+            #rgb_image = sd.draw_shapes_boxes_on_image(rgb_image, small_shapes_boxes_for_color_detection)
             rgb_image = sd.write_shapes_names_on_image(rgb_image, shapes_data)
         rgb_image = sd.write_shapes_names_on_image_by_their_order(rgb_image, shapes_data)
         screen_point_for_tello = screen_data['screen_point_for_tello']
