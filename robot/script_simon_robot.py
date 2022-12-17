@@ -62,7 +62,7 @@ vid.set(cv2.CAP_PROP_BUFFERSIZE, 2)
 
 folder_name = 'robomaster_ep_pov'
 #folder_name = 'robot_1'
-input_folder_full_path = f'./input_data_simon/videos_and_images/images/' + folder_name
+input_folder_full_path = f'./input_data/' + folder_name
 input_file_name = '00076.jpg'
 # input_file_name = 'Simon_00001.jpg'
 image_full_path = input_folder_full_path + '/' + input_file_name
