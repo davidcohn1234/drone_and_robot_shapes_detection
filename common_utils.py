@@ -8,6 +8,7 @@ def extract_frames_from_videos(videos_and_images_folder):
     video_folder_path = videos_and_images_folder + '/videos'
     images_folder_path = videos_and_images_folder + '/images'
     video_names = os.listdir(video_folder_path)
+    video_names.sort()
 
     isFolderExist = os.path.exists(images_folder_path)
     if isFolderExist:

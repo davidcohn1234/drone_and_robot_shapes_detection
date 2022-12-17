@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
 import torch
+import common_utils
 
-class ShapeDetector:
+class ShapeDetectorYolo:
     def __init__(self):
         self.brown_color_data = {"name": 'brown', "lower": (0, 10, 33), "upper": (15, 162, 131),
                                                      "rgb_color": (19, 69, 139)}
@@ -31,6 +32,10 @@ class ShapeDetector:
                                    self.pink_color_data]
         self.model = torch.hub.load('ultralytics/yolov5', 'custom', path='./weights_simon_grayscale.pt')
         self.model.conf = 0.8
+        self.zip_folder = '..'
+        common_utils.download_input_images_from_google_drive(zip_folder=self.zip_folder,
+                                                             zip_file_id='1dimHaktpjQSFCEgG3S29L_5tkH82aSN3')
+        common_utils.extract_frames_from_videos(self.zip_folder + '/' + 'input_data')
 
 
     def detect_shapes(self, rgb_frame, frame_index):
@@ -44,7 +49,6 @@ class ShapeDetector:
         num_of_shapes = shapes_numpy_locations.shape[0]
         x_ratio = 0.0
         y_ratio = 0.0
-        print(f'frame_index = {frame_index}')
 
         frame_with_shapes_data = rgb_frame.copy()
         for shape_index in range(0, num_of_shapes):
