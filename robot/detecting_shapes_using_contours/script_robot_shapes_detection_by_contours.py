@@ -1,7 +1,7 @@
 import cv2
 import os
 import glob
-from shapedetector_robot import ShapeDetector
+from shapedetector_robot_contours import ShapeDetector
 
 def create_empty_output_folder(images_output_folder):
     isExist = os.path.exists(images_output_folder)
@@ -15,7 +15,7 @@ def create_empty_output_folder(images_output_folder):
 def main():
     sd = ShapeDetector()
     folder_name = 'robot_01'
-    input_folder_full_path = f'./input_data/' + folder_name
+    input_folder_full_path = f'../input_data/' + folder_name
     jpg_files = sorted(glob.glob(input_folder_full_path + '/*.jpg'))
     frame_milliseconds = 1
     images_output_folder = './images_with_data'

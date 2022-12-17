@@ -58,7 +58,7 @@ class ShapeDetector:
 
         self.shapes_types = ['circle', 'octagon', 'pentagon', 'rectangle', 'square', 'rhombus', 'star', 'triangle']
         self.template_gray_images = self.create_template_gray_images(self.shapes_types)
-        common_utils.download_input_images_from_google_drive(zip_folder='.', zip_file_id='1dimHaktpjQSFCEgG3S29L_5tkH82aSN3')
+        common_utils.download_input_images_from_google_drive(zip_folder='..', zip_file_id='1dimHaktpjQSFCEgG3S29L_5tkH82aSN3')
 
     def combine_shapes_boxes_into_a_single_list(self, shapes_boxes):
         boxes = []
