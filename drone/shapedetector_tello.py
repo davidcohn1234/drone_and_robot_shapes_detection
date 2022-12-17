@@ -182,7 +182,7 @@ class ShapeDetector:
     def create_template_gray_images(self, shapes_types):
         template_images = {}
         for shape_index, shape_name in enumerate(shapes_types):
-            template_full_path = 'template_shapes/' + shape_name + '.jpg'
+            template_full_path = '../template_shapes/' + shape_name + '.jpg'
             template_rgb_image = cv2.imread(template_full_path)
             template_gray_image = cv2.cvtColor(template_rgb_image, cv2.COLOR_BGR2GRAY)
             # template_gray_image_without_border = self.get_image_without_border(template_gray_image)
