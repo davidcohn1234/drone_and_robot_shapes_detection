@@ -584,19 +584,10 @@ def detect_shape_scores(shape_box, gray_image_with_single_shape, template_gray_i
 
 
 def main():
-    folder_name = 'back_screen_shapes_colors'
+    folder_name = 'mix'
     input_file_name = '00542.jpg'
 
-    # folder_name = 'back_screen_shapes_colors'
-    # input_file_name = '00172.jpg'
-    # #input_file_name = '00190.jpg'
-    # # input_file_name = '00133.jpg'
 
-    # folder_name = 'left_screen_qr_colors'
-    # input_file_name = '00111.jpg'
-
-    # folder_name = 'left_screen_words_shapes'
-    # input_file_name = '00217.jpg'
 
 
     #folder_name = 'back_screen_shapes_colors'
@@ -604,15 +595,9 @@ def main():
     #folder_name = 'shapes_on_screen'
     #folder_name = 'simon_shapes_with_paper_01'
     # input_folder_full_path = f'./input_data_simon/videos_and_images/images/' + folder_name + '/original'
-    input_folder_full_path = f'./input_data_simon/videos_and_images/mankal/' + folder_name
+    input_folder_full_path = f'./input_data_simon/' + folder_name
 
-    # folder_name = 'colors_names_1'
-    # folder_name = 'colors_names_2'
-    # folder_name = 'colors_names_3'
-    # folder_name = 'qr_1'
-    # folder_name = 'shapes_and_colors_1'
-    # folder_name = 'shapes_and_colors_2'
-    #folder_name = 'shapes_names_1'
+
 
     #input_folder_full_path = f'./input_data_simon/videos_and_images/images_simon_room/' + folder_name
     #input_file_name = '00245.jpg'
