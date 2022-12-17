@@ -4,6 +4,7 @@ import glob
 from enum import Enum
 from shapedetector_robot_yolo import ShapeDetectorYolo
 from shapedetector_robot_contours import ShapeDetectorContours
+import common_utils
 
 
 class ShapeDetectionType(Enum):
@@ -26,11 +27,15 @@ def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name):
         sd = ShapeDetectorYolo()
     input_folder_full_path = f'./input_data/images/' + folder_name
     print()
-    print(f'Start detecting shapes on folder {input_folder_full_path}')
+    print(f'Detecting shapes on folder {input_folder_full_path}')
     jpg_files = sorted(glob.glob(input_folder_full_path + '/*.jpg'))
     frame_milliseconds = 1
-    images_output_folder = './images_with_data' + '/' + folder_name
+    main_output_folder = './output'
+    main_images_output_folder = main_output_folder + '/' + 'images'
+    videos_output_folder = main_output_folder + '/' + 'videos'
+    images_output_folder = main_images_output_folder + '/' + folder_name
     create_empty_output_folder(images_output_folder)
+    create_empty_output_folder(videos_output_folder)
 
 
     for frame_index, jpg_file in enumerate(jpg_files):
@@ -46,6 +51,12 @@ def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name):
             break
     cv2.destroyAllWindows()
     print(f'Finished detecting shapes on folder {input_folder_full_path}')
+
+    frame_rate = 5
+    video_path = videos_output_folder + '/' + folder_name + '.avi'
+    print(f'Creating video {video_path}')
+    common_utils.create_video(images_output_folder, 'jpg', video_path, frame_rate)
+    print(f'Finised creating video {video_path}')
 
 def main():
     folder_name = 'robomaster_ep_pov'

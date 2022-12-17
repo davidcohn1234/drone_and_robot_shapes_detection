@@ -2,7 +2,24 @@ import os
 import cv2
 import shutil
 import gdown
-from zipfile import ZipFile
+import glob
+
+def create_video(frames_path, frame_extension, video_path, frame_rate):
+    frames_files_full_paths = glob.glob(f'{frames_path}/*.{frame_extension}')
+    frames_files_full_paths = sorted(frames_files_full_paths)
+    first_frame_full_path = frames_files_full_paths[0]
+    first_frame = cv2.imread(first_frame_full_path)
+    first_frame_shape = first_frame.shape
+    height = first_frame_shape[0]
+    width = first_frame_shape[1]
+    frameSize = (width, height)
+    out = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'DIVX'), frame_rate, frameSize)
+    num_of_frames = len(frames_files_full_paths)
+    for idx, filename in enumerate(frames_files_full_paths):
+        print(f'creating video: frame {idx + 1} out of {num_of_frames}')
+        img = cv2.imread(filename)
+        out.write(img)
+    out.release()
 
 def extract_frames_from_videos(videos_and_images_folder):
     video_folder_path = videos_and_images_folder + '/videos'
@@ -95,4 +112,3 @@ def download_input_images_from_google_drive(zip_folder, zip_file_id):
 def unzip_file(zip_file_full_path, extract_dir):
     archive_format = "zip"
     shutil.unpack_archive(zip_file_full_path, extract_dir, archive_format)
-    david = 5
