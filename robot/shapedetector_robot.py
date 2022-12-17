@@ -390,76 +390,7 @@ class ShapeDetector:
                 filtered_list_text_in_image.append(text_in_image)
         return filtered_list_text_in_image
 
-    def read_words(self, rgb_image):
 
-
-        # gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
-        # contours = self.get_image_contours(rgb_image)
-        # screen_box = self.detect_screen_box(contours)
-        # # rgb_image = write_frame_number_on_image(rgb_image, frame_index + 1, num_of_frames)
-        # self.image_data['screen_data']['screen_box'] = screen_box
-        # self.image_data['screen_data']['screen_box_dict'] = self.convert_box_to_dict(screen_box)
-        # if len(screen_box) > 0:
-        #     shapes_boxes = self.detect_shapes_boxes_in_screen(contours, screen_box, gray_image)
-        #     rgb_image = self.draw_shapes_boxes_on_image(rgb_image, shapes_boxes)
-        #     cv2.imshow('rgb_image', rgb_image)
-        #     cv2.waitKey(1)
-        #     david = 5
-
-
-
-
-
-
-        gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
-
-        kernel = np.array([[0, -1, 0],
-                           [-1, 5, -1],
-                           [0, -1, 0]])
-        # kernel = np.array([[-1, -1, -1],
-        #                    [-1, 9,-1],
-        #                    [-1, -1, -1]])
-        sharpen_image = cv2.filter2D(src=gray_image, ddepth=-1, kernel=kernel)
-
-        (thresh, binary_image) = cv2.threshold(sharpen_image, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-        binary_image_white_background = cv2.adaptiveThreshold(sharpen_image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 21, 10)
-        binary_image = cv2.bitwise_not(binary_image_white_background)
-
-        custom_config = r'--oem 3 --psm 6'
-        # custom_config = r'-c tessedit_char_whitelist=0123456789 --psm 6'
-        text_image_to_string = pytesseract.image_to_string(binary_image, lang='eng', config=custom_config)
-        ist_text_in_image_part1 = text_image_to_string.split()
-        text_dict = pytesseract.image_to_data(binary_image, output_type=pytesseract.Output.DICT, lang='eng',
-                                              config=custom_config)
-        list_text_in_image = text_dict['text']
-        list_text_in_image_lower = [word.lower() for word in list_text_in_image]
-        # list_text_in_image.extend(list_text_in_image_part1)
-        # list_text_in_image.sort()
-
-        shapes_list = ['square', 'circle', 'octagon', 'rhombus', 'triangle', 'rectangle', 'pentagon', 'star']
-        colors_list = ['brown', 'yellow', 'orange', 'red', 'purple', 'green', 'blue', 'magenta']
-        shapes_intersection = self.calc_intersection(shapes_list, list_text_in_image_lower)
-        colors_intersection = self.calc_intersection(colors_list, list_text_in_image_lower)
-
-
-        # filtered_list_shapes_names = self.filter_words_by_list(list_text_in_image, shapes_list)
-        # filtered_list_colors_names = self.filter_words_by_list(list_text_in_image, colors_list)
-
-        if len(shapes_intersection) > 0:
-            words_type = self.ImageDateType.WORDS_SHAPES_NAMES
-            words = shapes_intersection
-        elif len(colors_intersection) > 0:
-            words_type = self.ImageDateType.WORDS_COLORS_NAMES
-            words = colors_intersection
-        else:
-            words_type = None
-            words = None
-
-        # cv2.imshow('binary_image', binary_image)
-        # cv2.imshow('sharpen_image', sharpen_image)
-        # cv2.waitKey()
-
-        return words, words_type
 
     def get_shape_in_the_middle_of_the_frame(self, rgb_frame, shapes_data, ratio_x):
         [frame_height, frame_width, channels] = rgb_frame.shape
@@ -538,7 +469,7 @@ class ShapeDetector:
     def get_shapes_and_colors_data_from_frame(self, rgb_image):
         gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
         contours = self.get_image_contours(rgb_image)
-        shapes_boxes = self.detect_shapes_boxes_in_screen(contours, gray_image)
+        shapes_boxes = self.detect_shapes_boxes(contours, gray_image)
         shapes_data = self.detect_shapes_data(shapes_boxes, rgb_image, gray_image, self.template_gray_images)
         shapes_boxes = [single_shape_data['shape_box'] for single_shape_data in shapes_data]
         small_shapes_boxes_for_color_detection = [single_shape_data['small_shape_box_for_color_detection'] for single_shape_data in shapes_data]
@@ -573,34 +504,6 @@ class ShapeDetector:
         rgb_image = self.write_frame_number_on_image(rgb_image, frame_index)
         rgb_image = self.draw_lines_and_write_shape_name_on_frame(rgb_image, ratio_x, shape_name_for_frame, shape_color_for_frame)
         return rgb_image
-
-        #frame_with_shapes_data = detect_shapes(rgb_image, frame_index)
-
-
-
-
-
-
-        # shapes_data = self.detect_shapes_data(shapes_boxes, rgb_image, gray_image, self.template_gray_images)
-        #
-        #
-        # screen_box = self.detect_screen_box(contours)
-        # # rgb_image = write_frame_number_on_image(rgb_image, frame_index + 1, num_of_frames)
-        # self.image_data['screen_data']['screen_box'] = screen_box
-        # self.image_data['screen_data']['screen_box_dict'] = self.convert_box_to_dict(screen_box)
-        # if len(screen_box) > 0:
-        #     shapes_boxes = self.detect_shapes_boxes_in_screen(contours, screen_box, gray_image)
-        #     # all_boxes = get_all_contours_boxes(contours)
-        #     shapes_data = self.detect_shapes_data(shapes_boxes, rgb_image, gray_image, self.template_gray_images)
-        #     small_box_on_empty_part_of_screen = self.get_small_box_on_empty_part_of_screen(shapes_data, screen_box)
-        #     screen_color_data = self.get_screen_color_data(rgb_image, small_box_on_empty_part_of_screen)
-        #     self.image_data['screen_data']['screen_color_data'] = screen_color_data
-        #     self.image_data['screen_data']['small_box_on_empty_part_of_screen'] = small_box_on_empty_part_of_screen
-        #     small_box_on_empty_part_of_screen_dict = self.convert_box_to_dict(small_box_on_empty_part_of_screen)
-        #     self.image_data['screen_data'][
-        #         'small_box_on_empty_part_of_screen_dict'] = small_box_on_empty_part_of_screen_dict
-        #     self.image_data['shapes_data'] = shapes_data
-        # return self.image_data
 
     def check_if_image_contains_one_of_the_shapes(self, gray_image_with_single_shape, template_gray_images):
         num_of_template_shapes = len(template_gray_images)
@@ -767,52 +670,6 @@ class ShapeDetector:
 
 
 
-    def sort_boxes(self, boxes, threshold):
-        if len(boxes) == 0:
-            return boxes
-        num_of_boxes = boxes.shape[0]
-        ascending_indexes = np.arange(1, num_of_boxes + 1, 1, dtype=int)
-        extra_column = np.vstack(ascending_indexes)
-        boxes_with_indexes = np.hstack((boxes, extra_column))
-        # sorted_boxes_by_y_vals = boxes_with_indexes
-        y_indexes = np.argsort(boxes_with_indexes[:, 1])
-        sorted_boxes_by_y_vals = boxes_with_indexes[y_indexes]
-        sorted_boxes_by_y_vals[sorted_boxes_by_y_vals[:, 1].argsort()]
-        y_values = sorted_boxes_by_y_vals[:, 1]
-        first_y = sorted_boxes_by_y_vals[0, 1]
-        dists_from_first_y = y_values - first_y
-        row_order_on_screen = (dists_from_first_y > threshold).astype(int) + 1
-        index_of_first_box_in_second_row = np.argmax(row_order_on_screen)
-        row_order_on_screen = np.vstack(row_order_on_screen)
-        boxes_with_rows_order_sorted_by_y_vals = np.hstack((sorted_boxes_by_y_vals, row_order_on_screen))
-        boxes_of_first_row_on_screen = boxes_with_rows_order_sorted_by_y_vals[0:index_of_first_box_in_second_row, :]
-        boxes_of_second_and_third_row_on_screen = boxes_with_rows_order_sorted_by_y_vals[index_of_first_box_in_second_row:, :]
-        y_values_in_second_and_third_rows = boxes_of_second_and_third_row_on_screen[:, 1]
-        first_y_in_second_row = boxes_of_second_and_third_row_on_screen[0, 1]
-        dists_from_first_y_in_second_row = y_values_in_second_and_third_rows - first_y_in_second_row
-        row_order_on_screen_on_second_row = (dists_from_first_y_in_second_row > threshold).astype(int) + 2
-        max_row_order_on_screen_on_second_row = np.max(row_order_on_screen_on_second_row)
-        min_row_order_on_screen_on_second_row = np.min(row_order_on_screen_on_second_row)
-        if max_row_order_on_screen_on_second_row == min_row_order_on_screen_on_second_row:
-            boxes_of_second_row_on_screen = boxes_of_second_and_third_row_on_screen
-        else:
-            index_of_first_box_in_third_row = np.argmax(row_order_on_screen_on_second_row)
-            row_order_on_screen_on_second_row = np.vstack(row_order_on_screen_on_second_row)
-            row_order_on_screen[index_of_first_box_in_second_row:] = row_order_on_screen_on_second_row
-            a = boxes_with_rows_order_sorted_by_y_vals[:, 5]
-            squeezed_row_order_on_screen = np.squeeze(row_order_on_screen)
-            boxes_with_rows_order_sorted_by_y_vals[:, 5] = squeezed_row_order_on_screen
-            boxes_of_second_row_on_screen = boxes_of_second_and_third_row_on_screen[0:index_of_first_box_in_third_row]
-
-        x_indexes_row_1 = np.argsort(boxes_of_first_row_on_screen[:, 0])
-        boxes_of_first_row_on_screen_ordered_by_x = boxes_of_first_row_on_screen[x_indexes_row_1]
-        x_indexes_row_2 = np.argsort(boxes_of_second_row_on_screen[:, 0])
-        boxes_of_second_row_on_screen_ordered_by_x = boxes_of_second_row_on_screen[x_indexes_row_2]
-        sorted_boxes_with_indexes = np.vstack(
-            (boxes_of_first_row_on_screen_ordered_by_x, boxes_of_second_row_on_screen_ordered_by_x))
-        sorted_boxes = sorted_boxes_with_indexes[:, :-2]
-        return sorted_boxes
-
     def check_if_shape_dimensions(self, width, height, min_width, max_width, min_height, max_height):
         diff_width_height = abs(width - height)
         if max_width > width > min_width and \
@@ -822,7 +679,7 @@ class ShapeDetector:
         else:
             return False
 
-    def detect_shapes_boxes_in_screen(self, contours, gray_image):
+    def detect_shapes_boxes(self, contours, gray_image):
         boxes = list()
         for single_contour in contours:
             x, y, w, h = cv2.boundingRect(single_contour)
@@ -841,25 +698,12 @@ class ShapeDetector:
                 boxes.append(shape_box)
         boxes = np.array(boxes)
 
-        # self.max_screen_width = 750
-        # self.min_screen_width = 200
-        #
-        # self.max_screen_height = 550
-        # self.min_screen_height = 200
-        #
-        # # self.max_square_size = 90
-        # # self.min_square_size = 50
-        #
-        # self.max_square_size = 85
-        # self.min_square_size = 35
-
         boxes_in_shapes_sizes = self.filter_boxes_in_ranges(boxes,
                                             self.min_square_size,
                                             self.max_square_size,
                                             self.min_square_size,
                                             self.max_square_size)
         boxes = imutils.object_detection.non_max_suppression(boxes_in_shapes_sizes)
-        # sorted_boxes = self.sort_boxes(boxes, threshold=40)
         return boxes
 
     def check_if_box_inside_screen(self, shape_box, screen_box):
@@ -1319,22 +1163,6 @@ class ShapeDetector:
                              thickness=1)
         return binary_image_with_complete_lines_3_channels
 
-    def complete_partial_lines_in_image(self, binary_image):
-        rho = 1  # distance resolution in pixels of the Hough grid
-        theta = np.pi / 180  # angular resolution in radians of the Hough grid
-        threshold = 100  # minimum number of votes (intersections in Hough grid cell)
-        min_line_length = 20  # minimum number of pixels making up a line
-        max_line_gap = 20  # maximum gap in pixels between connectable line segments
-
-        # Run Hough on edge detected image
-        # Output "lines" is an array containing endpoints of detected line segments
-        lines = cv2.HoughLinesP(binary_image, rho, theta, threshold, np.array([]),
-                                min_line_length, max_line_gap)
-        binary_image_with_extra_lines = self.draw_white_lines_on_image(lines, binary_image)
-        lines_color = (255, 0, 255)
-        rgb_image_with_extra_rgb_lines = self.draw_rgb_lines_on_image(lines, binary_image, lines_color)
-        return binary_image_with_extra_lines, rgb_image_with_extra_rgb_lines
-
     def draw_white_lines_on_image(self, lines, binary_image):
         binary_image_with_extra_lines = binary_image.copy()
         if lines is not None:
@@ -1430,26 +1258,9 @@ class ShapeDetector:
         gray_image_no_noise = gray_image
         binary_image_edges_image = cv2.Canny(image=gray_image_no_noise, threshold1=50,
                                              threshold2=0)
-        binary_image_with_complete_lines, rgb_image_with_extra_rgb_lines = self.complete_partial_lines_in_image(
-            binary_image_edges_image)
         contours = self.get_contours_from_binary_image(binary_image_edges_image)
         image_edges_3_channels = self.expand_1_channel_image_to_3_channels_image(binary_image_edges_image)
         image_with_contours = image_edges_3_channels.copy()
-
-        # for i in range(len(contours)):
-        #     color = (rng.randint(0, 256), rng.randint(0, 256), rng.randint(0, 256))
-        #     cv2.drawContours(image_with_contours, contours, i, color)
-        #     single_contour = contours[i]
-        #     x, y, w, h = cv2.boundingRect(single_contour)
-        #     # if local_max_screen_width > w > local_min_screen_width and \
-        #     #         local_max_screen_height > h > local_min_screen_height:
-        #     x1 = x
-        #     x2 = x1 + w
-        #     y1 = y
-        #     y2 = y1 + h
-        #     box_thickness = 3
-        #     cv2.rectangle(image_with_contours, (x1, y1), (x2, y2), color, box_thickness)
-
 
         cv2.drawContours(image_with_contours, contours, -1, (0, 0, 255), 2)
         screen_box = self.detect_screen_box(contours)
@@ -1516,28 +1327,6 @@ class ShapeDetector:
 
         return rgb_image
 
-    def write_shapes_names_on_image_by_their_order(self, rgb_image, shapes_data):
-        x = 50
-        y = 100
-        for single_shape_data in shapes_data:
-            shape_name = single_shape_data['shape_name']
-            shape_color_data = single_shape_data['shape_color_data']
-
-            shape_color_name = shape_color_data["name"]
-            shape_color = shape_color_data["rgb_color"]
-
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            fontScale = 1.0
-            thickness = 2
-            cv2.putText(rgb_image, f'{shape_name}', (x, y), font,
-                        fontScale, shape_color, thickness, cv2.LINE_AA)
-            y += 25
-            cv2.putText(rgb_image, f'{shape_color_name}', (x, y), font,
-                        fontScale, shape_color, thickness, cv2.LINE_AA)
-
-            y += 50
-
-        return rgb_image
 
     def write_screen_color_on_image(self, rgb_image, screen_data):
         screen_color_data = screen_data['screen_color_data']
@@ -1589,70 +1378,3 @@ class ShapeDetector:
             box = (x1, y1, x2, y2)
             boxes.append(box)
         return boxes
-
-    def get_qr_data(self, rgb_image):
-        if rgb_image.shape[0] == 0:
-            print('EMPTY IMAGE!!!!!')
-            return [], []
-        qr_result, qr_points, _ = self.detect.detectAndDecode(rgb_image)
-        if qr_result == '':
-            return [], []
-        last_char = qr_result[-1]
-        if last_char == '\n':
-            qr_result = qr_result[0:-1]
-        qr_data = qr_result.split('\n')
-        return qr_data, qr_points
-
-    def calc_intersection(self, list1, list2):
-        set1 = set(list1)
-        set2 = set(list2)
-        sets_intersection = set1 & set2
-        lists_intersection = list(sets_intersection)
-        return lists_intersection
-
-    def detect_qr_data_type(self, qr_list_data):
-        if not qr_list_data:
-            return 'no_qr_data'
-        shapes_list = ['square', 'circle', 'octagon', 'rhombus', 'triangle', 'rectangle', 'pentagon', 'star']
-        colors_list = ['brown', 'yellow', 'orange', 'red', 'purple', 'green', 'blue', 'magenta']
-        shapes_intersection = self.calc_intersection(shapes_list, qr_list_data)
-        colors_intersection = self.calc_intersection(colors_list, qr_list_data)
-        if len(shapes_intersection) > 0:
-            return 'qr_shapes_only'
-        elif len(colors_intersection) > 0:
-            return 'qr_colors_only'
-        else:
-            return None  # error. should never reach here
-
-    def get_screen_color_by_qr_points(self, rgb_image, qr_points):
-
-        qr_x_vals = qr_points[:, :, 0]
-        qr_y_vals = qr_points[:, :, 1]
-        min_qr_x = np.min(qr_x_vals)
-        max_qr_x = np.max(qr_x_vals)
-        min_qr_y = np.min(qr_y_vals)
-        max_qr_y = np.max(qr_y_vals)
-
-        delta_y = min(min_qr_y, 40)
-        end_y = int(min_qr_y - 0.5 * delta_y)
-        start_y = int(min_qr_y - delta_y)
-        start_x = int(min_qr_x + 0.25 * (max_qr_x - min_qr_x))
-        end_x = int(min_qr_x + 0.75 * (max_qr_x - min_qr_x))
-
-        small_box_on_empty_part_of_screen = np.array((start_x, start_y, end_x, end_y))
-        #rgb_image = self.draw_small_box_on_empty_part_of_image(rgb_image, small_box_on_empty_part_of_screen)
-        # cv2.imshow('rgb_image', rgb_image)
-        # cv2.waitKey(0)
-        screen_color_data = self.get_screen_color_data(rgb_image, small_box_on_empty_part_of_screen)
-        screen_data = {'screen_color_data': screen_color_data, 'small_box_on_empty_part_of_screen': small_box_on_empty_part_of_screen, 'screen_box': []}
-        return screen_data
-
-    def get_image_qr_data(self, rgb_image):
-        qr_data_list, qr_points = self.get_qr_data(rgb_image)
-        qr_data_type = self.detect_qr_data_type(qr_data_list)
-        if qr_data_type == 'no_qr_data':
-            screen_data = {'screen_color_data': {'name': None, 'rgb_color': None},
-                           'small_box_on_empty_part_of_screen': [], 'screen_box': []}
-        else:
-            screen_data = self.get_screen_color_by_qr_points(rgb_image, qr_points)
-        return qr_data_list, qr_points, qr_data_type, screen_data
