@@ -13,9 +13,8 @@ def create_empty_output_folder(images_output_folder):
         for f in files:
             os.remove(f)
 
-def main():
+def detect_shapes_on_frames_from_folder(folder_name):
     sd = ShapeDetector()
-    folder_name = '012_mix'
     input_folder_full_path = f'./input_data/' + folder_name
     # input_file_name = '00542.jpg'
     # image_full_path = input_folder_full_path + '/' + input_file_name
@@ -74,5 +73,9 @@ def main():
     print(f'Creating video {video_path}')
     common_utils.create_video(images_output_folder, 'jpg', video_path, frame_rate)
     print(f'Finised creating video {video_path}')
+
+def main():
+    folder_name = '012_mix'
+    detect_shapes_on_frames_from_folder(folder_name)
 
 main()
