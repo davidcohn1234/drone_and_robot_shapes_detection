@@ -511,13 +511,17 @@ class ShapeDetector:
             self.image_data = self.get_shapes_only_frame_data(rgb_image, qr_data, screen_data, self.ImageDateType.QR_SHAPES_ONLY)
         else:
             words, words_type, screen_data, rgb_image_with_words_data = self.read_words(rgb_image)
-            if words_type == 4:
+            if words_type == 5:
                 self.image_data = self.get_shapes_only_frame_data(rgb_image, words, screen_data, self.ImageDateType.WORDS_SHAPES_NAMES)
-            elif words_type == 5:
+            elif words_type == 4:
                 self.image_data = self.get_colors_only_frame_data(rgb_image, words, screen_data, self.ImageDateType.WORDS_COLORS_NAMES)
             else:
-                self.image_data['image_data_type'] = self.ImageDateType.SHAPES_AND_COLORS
                 self.image_data = self.get_shapes_and_colors_data_from_frame(rgb_image)
+                num_of_detected_shapes_in_image = len(self.image_data['shapes_data'])
+                if num_of_detected_shapes_in_image > 0:
+                    self.image_data['image_data_type'] = self.ImageDateType.SHAPES_AND_COLORS
+                else:
+                    self.image_data['image_data_type'] = self.ImageDateType.NO_TYPE
                 dd = self.image_data
         return self.image_data
 
@@ -1423,14 +1427,21 @@ class ShapeDetector:
         resized_rgb_image = cv2.resize(rgb_image, dim, interpolation=interpolation_method)
         return resized_rgb_image
 
-    def write_headline_on_image(self, image_rgb, headline):
+    def write_headline_on_image(self, rgb_image, headline):
         font = cv2.FONT_HERSHEY_SIMPLEX
         fontScale = 0.5
         color = (0, 0, 255)
         thickness = 1
         org = (20, 20)
-        cv2.putText(image_rgb, headline, org, font, fontScale, color, thickness, cv2.LINE_AA)
-        return image_rgb
+        cv2.putText(rgb_image, headline, org, font, fontScale, color, thickness, cv2.LINE_AA)
+        return rgb_image
+
+    def write_text_on_image(self, rgb_image, text, position, color):
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        fontScale = 1.2
+        thickness = 2
+        cv2.putText(rgb_image, text, position, font, fontScale, color, thickness, cv2.LINE_AA)
+        return rgb_image
 
     def get_combined_images_in_row(self, images):
         seperator_size = 20
@@ -1605,6 +1616,25 @@ class ShapeDetector:
             y += 50
 
         return rgb_image
+
+    def write_image_type_on_image(self, rgb_image, image_data):
+        position = (200, 50)
+        if image_data['image_data_type'] == self.ImageDateType.QR_COLORS_ONLY:
+            self.write_text_on_image(rgb_image=rgb_image, text="image type: QR colors only", position=position,
+                                     color=(255, 0, 0))
+        elif image_data['image_data_type'] == self.ImageDateType.QR_SHAPES_ONLY:
+            self.write_text_on_image(rgb_image=rgb_image, text="image type: QR shapes only", position=position,
+                                     color=(255, 0, 255))
+        elif image_data['image_data_type'] == self.ImageDateType.SHAPES_AND_COLORS:
+            self.write_text_on_image(rgb_image=rgb_image, text="image type: shapes and colors", position=position, color=(255, 255, 0))
+        elif image_data['image_data_type'] == self.ImageDateType.WORDS_SHAPES_NAMES:
+            self.write_text_on_image(rgb_image=rgb_image, text="image type: words - shapes names", position=position, color=(0, 255, 255))
+        elif image_data['image_data_type'] == self.ImageDateType.WORDS_COLORS_NAMES:
+            self.write_text_on_image(rgb_image=rgb_image, text="image type: words - colors names", position=position, color=(0, 0, 255))
+        else:
+            self.write_text_on_image(rgb_image=rgb_image, text="image type: no type", position=position, color=(0, 0, 0))
+        return rgb_image
+
 
     def write_screen_color_on_image(self, rgb_image, screen_data):
         screen_color_data = screen_data['screen_color_data']
