@@ -8,8 +8,7 @@ from pytesseract import pytesseract
 import nltk
 from imutils import object_detection
 import math
-#from fuzzywuzzy import process
-import random as rng
+import common_utils
 
 
 class ShapeDetector:
@@ -85,6 +84,7 @@ class ShapeDetector:
         }
         self.template_gray_images = self.create_template_gray_images(self.shapes_types)
         self.detect = cv2.QRCodeDetector()
+        common_utils.download_input_images_from_google_drive('./input_folder_dddd')
 
     def combine_shapes_boxes_into_a_single_list(self, shapes_boxes):
         boxes = []
@@ -522,7 +522,6 @@ class ShapeDetector:
                     self.image_data['image_data_type'] = self.ImageDateType.SHAPES_AND_COLORS
                 else:
                     self.image_data['image_data_type'] = self.ImageDateType.NO_TYPE
-                dd = self.image_data
         return self.image_data
 
     def get_screen_center(self, screen_box):

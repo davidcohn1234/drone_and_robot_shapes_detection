@@ -1,6 +1,8 @@
 import os
 import cv2
 import shutil
+import gdown
+from zipfile import ZipFile
 
 def extract_frames_from_videos(videos_and_images_folder):
     video_folder_path = videos_and_images_folder + '/videos'
@@ -58,4 +60,35 @@ def copy_folders(input_main_folder_full_path, output_main_folder_full_path):
             destination_file_full_path = destination_sub_folder + '/' + destination_file_name
             print(f'copying {single_file} to {destination_file_full_path}')
             shutil.copyfile(single_file, destination_file_full_path)
-        david = 5
+
+def download_input_images_from_google_drive(zip_and_images_folder):
+    sub_folder_name = 'images'
+    sub_folder_full_path = zip_and_images_folder + '/' + sub_folder_name
+
+    is_folder_exist = os.path.exists(sub_folder_full_path)
+    if is_folder_exist:
+        pass
+        #return
+    else:
+        os.makedirs(sub_folder_full_path)
+
+    google_drive_prefix_url = 'https://drive.google.com/uc?id='
+
+    zip_file_id = '1jfBeWri3hrJVjJPRQ2QdW1WocgzmM5pX'
+
+    zip_file_name = 'input_data_david.zip'
+    print()
+    print(f'Downloading {zip_file_name}')
+    url = google_drive_prefix_url + zip_file_id
+    output_zip_file_full_path = sub_folder_full_path + '/' + zip_file_name
+    is_zip_file_exist = os.path.exists(output_zip_file_full_path)
+    if not is_zip_file_exist:
+        gdown.download(url, output_zip_file_full_path, quiet=False)
+    unzip_file(output_zip_file_full_path, sub_folder_full_path)
+    print('Finished downloading zip file')
+
+
+def unzip_file(zip_file_full_path, extract_dir):
+    archive_format = "zip"
+    shutil.unpack_archive(zip_file_full_path, extract_dir, archive_format)
+    david = 5
