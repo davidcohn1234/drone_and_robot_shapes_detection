@@ -131,4 +131,4 @@ dmypy.json
 input_data.zip
 **input_data/
 **output_images/
-**images_with_data/
+**output/
