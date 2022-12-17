@@ -84,7 +84,7 @@ class ShapeDetector:
         }
         self.template_gray_images = self.create_template_gray_images(self.shapes_types)
         self.detect = cv2.QRCodeDetector()
-        common_utils.download_input_images_from_google_drive('.')
+        common_utils.download_input_images_from_google_drive(zip_folder='.', zip_file_id='1M28mvZFacO_Q5e8_In-PZn8-jnz7jhiX')
 
     def combine_shapes_boxes_into_a_single_list(self, shapes_boxes):
         boxes = []

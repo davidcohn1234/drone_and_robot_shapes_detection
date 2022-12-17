@@ -61,7 +61,7 @@ def copy_folders(input_main_folder_full_path, output_main_folder_full_path):
             print(f'copying {single_file} to {destination_file_full_path}')
             shutil.copyfile(single_file, destination_file_full_path)
 
-def download_input_images_from_google_drive(zip_folder):
+def download_input_images_from_google_drive(zip_folder, zip_file_id):
     input_data_folder_name = 'input_data'
     input_data_folder_full_path = zip_folder + '/' + input_data_folder_name
     is_folder_exist = os.path.exists(input_data_folder_full_path)
@@ -71,8 +71,6 @@ def download_input_images_from_google_drive(zip_folder):
         return
 
     google_drive_prefix_url = 'https://drive.google.com/uc?id='
-
-    zip_file_id = '1M28mvZFacO_Q5e8_In-PZn8-jnz7jhiX'
 
     zip_file_name = 'input_data.zip'
     print()

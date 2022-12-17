@@ -13,14 +13,15 @@ def create_empty_output_folder(images_output_folder):
             os.remove(f)
 
 def main():
-    folder_name = 'robomaster_ep_pov'
+    sd = ShapeDetector()
+    folder_name = 'robot_01'
     input_folder_full_path = f'./input_data/' + folder_name
     jpg_files = sorted(glob.glob(input_folder_full_path + '/*.jpg'))
     frame_milliseconds = 1
     images_output_folder = './images_with_data'
     create_empty_output_folder(images_output_folder)
 
-    sd = ShapeDetector()
+
     for frame_index, jpg_file in enumerate(jpg_files):
         rgb_image = cv2.imread(jpg_file)
         if rgb_image is None:

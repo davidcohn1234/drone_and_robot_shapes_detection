@@ -8,7 +8,7 @@ from pytesseract import pytesseract
 import nltk
 from imutils import object_detection
 import math
-import random as rng
+import common_utils
 
 class ShapeDetector:
     class ImageDateType(Enum):
@@ -80,6 +80,7 @@ class ShapeDetector:
         self.shapes_types = ['circle', 'octagon', 'pentagon', 'rectangle', 'square', 'rhombus', 'star', 'triangle']
         self.template_gray_images = self.create_template_gray_images(self.shapes_types)
         self.detect = cv2.QRCodeDetector()
+        common_utils.download_input_images_from_google_drive(zip_folder='.', zip_file_id='1dimHaktpjQSFCEgG3S29L_5tkH82aSN3')
 
     def combine_shapes_boxes_into_a_single_list(self, shapes_boxes):
         boxes = []
