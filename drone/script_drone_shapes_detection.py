@@ -13,6 +13,7 @@ def create_empty_output_folder(images_output_folder):
             os.remove(f)
 
 def main():
+    sd = ShapeDetector()
     folder_name = '012_mix'
     input_folder_full_path = f'./input_data/' + folder_name
     # input_file_name = '00542.jpg'
@@ -24,8 +25,6 @@ def main():
     images_output_folder = './output_images/' + folder_name
     create_empty_output_folder(images_output_folder)
 
-
-    sd = ShapeDetector()
     for frame_index, jpg_file in enumerate(jpg_files):
         rgb_image = cv2.imread(jpg_file)
         image_data = sd.get_image_data_from_frame(rgb_image)

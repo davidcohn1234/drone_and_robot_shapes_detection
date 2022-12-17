@@ -52,8 +52,8 @@ def copy_folders(input_main_folder_full_path, output_main_folder_full_path):
             os.makedirs(destination_sub_folder)
         files = [f.path for f in os.scandir(source_sub_folder_full_path) if f.is_file()]
         files.sort()
-        #counter = 1000 * sub_folder_counter
         counter = 0
+        counter = 1000 * sub_folder_counter
         for single_file in files:
             counter += 1
             destination_file_name = f"{counter:05}" + '.jpg'
@@ -61,31 +61,36 @@ def copy_folders(input_main_folder_full_path, output_main_folder_full_path):
             print(f'copying {single_file} to {destination_file_full_path}')
             shutil.copyfile(single_file, destination_file_full_path)
 
-def download_input_images_from_google_drive(zip_and_images_folder):
-    sub_folder_name = 'images'
-    sub_folder_full_path = zip_and_images_folder + '/' + sub_folder_name
-
-    is_folder_exist = os.path.exists(sub_folder_full_path)
+def download_input_images_from_google_drive(zip_folder):
+    input_data_folder_name = 'input_data'
+    input_data_folder_full_path = zip_folder + '/' + input_data_folder_name
+    is_folder_exist = os.path.exists(input_data_folder_full_path)
     if is_folder_exist:
-        pass
-        #return
-    else:
-        os.makedirs(sub_folder_full_path)
+        #if it already exists then return (nothing to do here).
+        #otherwise, it will be created when unzipping the zip file
+        return
 
     google_drive_prefix_url = 'https://drive.google.com/uc?id='
 
-    zip_file_id = '1jfBeWri3hrJVjJPRQ2QdW1WocgzmM5pX'
+    zip_file_id = '1M28mvZFacO_Q5e8_In-PZn8-jnz7jhiX'
 
-    zip_file_name = 'input_data_david.zip'
+    zip_file_name = 'input_data.zip'
     print()
-    print(f'Downloading {zip_file_name}')
+
     url = google_drive_prefix_url + zip_file_id
-    output_zip_file_full_path = sub_folder_full_path + '/' + zip_file_name
+    output_zip_file_full_path = zip_folder + '/' + zip_file_name
     is_zip_file_exist = os.path.exists(output_zip_file_full_path)
     if not is_zip_file_exist:
+        print(f'Downloading {zip_file_name}')
         gdown.download(url, output_zip_file_full_path, quiet=False)
-    unzip_file(output_zip_file_full_path, sub_folder_full_path)
-    print('Finished downloading zip file')
+        print('Finished downloading zip file')
+    else:
+        print(f'{zip_file_name} already exists')
+    print()
+    print(f'Extracting {zip_file_name}')
+    unzip_file(output_zip_file_full_path, zip_folder)
+    print(f'Finished extracting {zip_file_name}')
+
 
 
 def unzip_file(zip_file_full_path, extract_dir):
