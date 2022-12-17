@@ -521,7 +521,7 @@ class ShapeDetector:
         end_point = (image_middle_x, image_height)
         line_color = (255, 0, 0)
         line_thickness = 3
-        cv2.line(rgb_image, start_point, end_point, line_color, line_thickness)
+        #cv2.line(rgb_image, start_point, end_point, line_color, line_thickness)
         cv2.line(rgb_image, start_point_left_line, end_point_left_line, line_color, line_thickness)
         cv2.line(rgb_image, start_point_right_line, end_point_right_line, line_color, line_thickness)
         return rgb_image
