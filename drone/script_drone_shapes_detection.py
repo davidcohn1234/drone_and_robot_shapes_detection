@@ -595,7 +595,7 @@ def main():
     #folder_name = 'shapes_on_screen'
     #folder_name = 'simon_shapes_with_paper_01'
     # input_folder_full_path = f'./input_data_simon/videos_and_images/images/' + folder_name + '/original'
-    input_folder_full_path = f'./input_data_simon/' + folder_name
+    input_folder_full_path = f'./input_data/' + folder_name
 
 
 
