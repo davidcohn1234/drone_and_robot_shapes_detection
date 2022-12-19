@@ -5,6 +5,7 @@ import os
 import sys
 sys.path.append('../')
 import common_utils
+from moviepy.editor import VideoFileClip
 
 
 def create_empty_output_folder(images_output_folder):
@@ -16,7 +17,7 @@ def create_empty_output_folder(images_output_folder):
         for f in files:
             os.remove(f)
 
-def detect_shapes_on_frames_from_folder(folder_name):
+def detect_shapes_on_frames_from_folder(folder_name, create_gif_video):
     sd = ShapeDetector()
     input_folder_full_path = f'./input_data/' + folder_name
     # input_file_name = '00542.jpg'
@@ -79,8 +80,16 @@ def detect_shapes_on_frames_from_folder(folder_name):
     common_utils.create_video(images_output_folder, 'jpg', video_path, frame_rate)
     print(f'Finised creating video {video_path}')
 
+    if create_gif_video:
+        gif_video_path = videos_output_folder + '/' + folder_name + '.gif'
+        print(f'Creating gif video {gif_video_path}')
+        videoClip = VideoFileClip(video_path)
+        videoClip.write_gif(gif_video_path)
+        print(f'Finished creating gif video {gif_video_path}')
+
 def main():
     folder_name = sys.argv[1]
-    detect_shapes_on_frames_from_folder(folder_name)
+    create_gif_video = False
+    detect_shapes_on_frames_from_folder(folder_name, create_gif_video)
 
 main()

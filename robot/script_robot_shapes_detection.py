@@ -7,7 +7,7 @@ from shapedetector_robot_contours import ShapeDetectorContours
 import sys
 sys.path.append('../')
 import common_utils
-
+from moviepy.editor import VideoFileClip
 
 class ShapeDetectionType(Enum):
     DETECT_SHAPE_USING_YOLO = 0
@@ -22,7 +22,7 @@ def create_empty_output_folder(images_output_folder):
         for f in files:
             os.remove(f)
 
-def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name):
+def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name, create_gif_video):
     if shape_detection_type == ShapeDetectionType.DETECT_SHAPE_USING_CONTOURS:
         sd = ShapeDetectorContours()
     else:
@@ -64,10 +64,18 @@ def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name):
     common_utils.create_video(images_output_folder, 'jpg', video_path, frame_rate)
     print(f'Finised creating video {video_path}')
 
+    if create_gif_video:
+        gif_video_path = videos_output_folder + '/' + folder_name + '.gif'
+        print(f'Creating gif video {gif_video_path}')
+        videoClip = VideoFileClip(video_path)
+        videoClip.write_gif(gif_video_path)
+        print(f'Finished creating gif video {gif_video_path}')
+
 def main():
     folder_name = sys.argv[1]
     shape_detection_type_str = sys.argv[2]
+    create_gif_video = False
     shape_detection_type = getattr(ShapeDetectionType, shape_detection_type_str)
-    detect_shapes_on_frames_from_folder(shape_detection_type, folder_name)
+    detect_shapes_on_frames_from_folder(shape_detection_type, folder_name, create_gif_video)
 
 main()

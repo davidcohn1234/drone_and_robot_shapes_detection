@@ -9,3 +9,4 @@ torchvision
 pyyaml
 matplotlib
 seaborn
+moviepy
