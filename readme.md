@@ -12,8 +12,8 @@ I used `python 3.8.10`
 ## prerequisites
 1. `Python 3.8` installed (python 3.10 will not with the robomaster sdk).
 2. `tesseract` installed.
-  - For installing `tesseract` in Linux follow this link: https://lindevs.com/install-tesseract-ocr-on-ubuntu
-  - For installing `tesseract` in Windows follow this link: https://github.com/UB-Mannheim/tesseract/wiki
+  - For installing `tesseract` in **Linux** follow this link: https://lindevs.com/install-tesseract-ocr-on-ubuntu
+  - For installing `tesseract` in **Windows** follow this link: https://github.com/UB-Mannheim/tesseract/wiki
     - It is preferred that `tesseract.exe` will be in this path `C:/Program Files/Tesseract-OCR/tesseract.exe`.  In the code I first check this path and if it does not exist then I search for `tesseract.exe` in all the drives in the computer (which might take much longer).
 
 ## Instructions
