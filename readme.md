@@ -4,10 +4,10 @@ The 8 shapes are:
 circle, octagon, pentagon, rectangle, square, rhombus, star, triangle.  
 I used `python 3.8.10`
 Example output for robot:  
-<img src="./resources_for_readme/gif_videos/robot/robomaster_ep_pov.gif" width="640" height="360" />
+<img src="./resources_for_readme/gif_videos/robot/robomaster_ep_pov.gif" width="480" height="360" />
 
 Example output for tello drone:  
-<img src="./resources_for_readme/gif_videos/drone/shapes_colors_on_screen.gif" width="640" height="360" />
+<img src="./resources_for_readme/gif_videos/drone/shapes_colors_on_screen.gif" width="480" height="360" />
 
 ## Instructions
 For running the code to the following:
