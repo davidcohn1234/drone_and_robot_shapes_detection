@@ -3,6 +3,30 @@ import cv2
 import shutil
 import gdown
 import glob
+import os
+import re
+import platform
+
+platform_os = platform.system()
+if platform_os == "Windows":
+    import win32api
+    def find_file(root_folder, rex):
+        for root,dirs,files in os.walk(root_folder):
+            for f in files:
+                result = rex.search(f)
+                if result:
+                    first_path = os.path.join(root, f)
+                    return first_path
+        return None
+
+    def find_file_in_all_drives(file_name):
+        #create a regular expression for the file
+        rex = re.compile(file_name)
+        for drive in win32api.GetLogicalDriveStrings().split('\000')[:-1]:
+            first_path = find_file( drive, rex )
+            if first_path is not None:
+                return first_path
+        return None
 
 def create_video(frames_path, frame_extension, video_path, frame_rate):
     frames_files_full_paths = glob.glob(f'{frames_path}/*.{frame_extension}')

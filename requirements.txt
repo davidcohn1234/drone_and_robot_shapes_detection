@@ -10,3 +10,4 @@ pyyaml
 matplotlib
 seaborn
 moviepy
+pywin32; platform_system == "Windows"

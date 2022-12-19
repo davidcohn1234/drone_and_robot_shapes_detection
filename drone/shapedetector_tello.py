@@ -9,7 +9,8 @@ import nltk
 from imutils import object_detection
 import math
 import common_utils
-
+import platform
+import os
 
 class ShapeDetector:
     class ImageDateType(Enum):
@@ -82,9 +83,31 @@ class ShapeDetector:
                             'small_box_on_empty_part_of_screen': None,
                             'small_box_on_empty_part_of_screen_dict': None}
         }
+        self.tesseract_exists = self.update_tesseract_to_correct_path()
+        if not self.tesseract_exists:
+            return
         self.template_gray_images = self.create_template_gray_images(self.shapes_types)
         self.detect = cv2.QRCodeDetector()
         common_utils.download_input_images_from_google_drive(zip_folder='.', zip_file_id='1M28mvZFacO_Q5e8_In-PZn8-jnz7jhiX')
+
+    def update_tesseract_to_correct_path(self):
+        platform_os = platform.system()
+        if platform_os == "Windows":
+            print('Looking for tesseract.exe (in Windows)')
+            tesseract_path = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
+            tesseract_path_exist = os.path.isfile(tesseract_path)
+            if not tesseract_path_exist:
+                tesseract_path = common_utils.find_file_in_all_drives('tesseract.exe')
+            if tesseract_path is not None:
+                print(f'Found tesseract.exe in path {tesseract_path}')
+                pytesseract.tesseract_cmd = tesseract_path
+                return True
+            else:
+                print('Did not find tesseract')
+                return False
+        else:
+            #I assume that tesseract was intalled in Linux
+            return True
 
     def combine_shapes_boxes_into_a_single_list(self, shapes_boxes):
         boxes = []

@@ -19,6 +19,9 @@ def create_empty_output_folder(images_output_folder):
 
 def detect_shapes_on_frames_from_folder(folder_name, create_gif_video):
     sd = ShapeDetector()
+    if not sd.tesseract_exists:
+        print('You need to install tesseract!')
+        return
     input_folder_full_path = f'./input_data/' + folder_name
     # input_file_name = '00542.jpg'
     # image_full_path = input_folder_full_path + '/' + input_file_name
