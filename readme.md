@@ -9,6 +9,12 @@ I used `python 3.8.10`
 ### Example output for tello drone:  
 <img src="./resources_for_readme/gif_videos/drone/shapes_colors_on_screen.gif" width="480" height="360" />
 
+## prerequisites
+1. `Python 3.8` installed (python 3.10 will not with the robomaster sdk).
+2. `tesseract` installed.
+  - For installing `tesseract` in Linux follow this link: https://lindevs.com/install-tesseract-ocr-on-ubuntu
+  - For installing `tesseract` in Windows follow this link: https://github.com/UB-Mannheim/tesseract/wiki
+
 ## Instructions
 For running the code to the following:
 1. Open any folder you want to clone the project into.
