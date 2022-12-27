@@ -11,7 +11,7 @@ I used `python 3.8.10`
 
 ## prerequisites
 1. `Python 3.8` installed (python 3.10 will not with the robomaster sdk).
-2. `tesseract` installed.
+1. `tesseract` installed.
   - For installing `tesseract` in **Linux** follow this link: https://lindevs.com/install-tesseract-ocr-on-ubuntu
   - For installing `tesseract` in **Windows** follow this link: https://github.com/UB-Mannheim/tesseract/wiki
     - It is preferred that `tesseract.exe` will be in this path `C:/Program Files/Tesseract-OCR/tesseract.exe`.  In the code I first check this path and if it does not exist then I search for `tesseract.exe` in all the drives in the computer (which might take much longer).
@@ -33,6 +33,17 @@ For running the code to the following:
 1. Run the code
 
 ### Changing script parameters
+1. You can choose parameters for each script (for the drone or for the robot)
+1. For help for the robot script type
+```bash
+cd robot
+python script_robot_shapes_detection.py --help
+```
+1. For help for the drone script type
+```bash
+cd drone
+python script_drone_shapes_detection.py --help
+```
 1. For the drone script you can choose on which input folder to work on. Just go the script configuration and change the folder name in the `Parameters` line.  
 
 1. For the robot script you can choose if you want to detect shapes by `contours` or by `yolo`. And you can also choose the input folder to work on.  
