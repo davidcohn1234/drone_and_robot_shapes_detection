@@ -6,6 +6,7 @@ import sys
 sys.path.append('../')
 import common_utils
 from moviepy.editor import VideoFileClip
+import argparse
 
 
 def create_empty_output_folder(images_output_folder):
@@ -90,8 +91,27 @@ def detect_shapes_on_frames_from_folder(folder_name, create_gif_video):
         videoClip.write_gif(gif_video_path)
         print(f'Finished creating gif video {gif_video_path}')
 
+def parse_command_line():
+    arg_parser = argparse.ArgumentParser(description="parameters options")
+
+    arg_parser.add_argument('-ifp', '--input_folder_path',
+                            default='012_mix',
+                            nargs='?',
+                            help='Path to input folder of images',
+                            required=False
+                            )
+    args = arg_parser.parse_args()
+    return args
+
+def print_args():
+    args = parse_command_line()
+    for arg in vars(args):
+        print(arg, "= ", getattr(args, arg))
+
 def main():
-    folder_name = sys.argv[1]
+    args = parse_command_line()
+    print_args()
+    folder_name = args.input_folder_path
     create_gif_video = False
     detect_shapes_on_frames_from_folder(folder_name, create_gif_video)
 

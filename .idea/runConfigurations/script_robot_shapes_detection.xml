@@ -13,7 +13,7 @@
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/robot/script_robot_shapes_detection.py" />
-    <option name="PARAMETERS" value="robomaster_ep_pov DETECT_SHAPE_USING_CONTOURS" />
+    <option name="PARAMETERS" value="--input_folder_path robomaster_ep_pov --shape_detection_type contours" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

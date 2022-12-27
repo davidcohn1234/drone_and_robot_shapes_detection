@@ -8,6 +8,8 @@ from pytesseract import pytesseract
 import nltk
 from imutils import object_detection
 import math
+import sys
+sys.path.append('../')
 import common_utils
 import platform
 import os

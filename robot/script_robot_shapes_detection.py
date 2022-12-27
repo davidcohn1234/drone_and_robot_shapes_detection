@@ -8,10 +8,11 @@ import sys
 sys.path.append('../')
 import common_utils
 from moviepy.editor import VideoFileClip
+import argparse
 
-class ShapeDetectionType(Enum):
-    DETECT_SHAPE_USING_YOLO = 0
-    DETECT_SHAPE_USING_CONTOURS = 1
+class ShapeDetectionType(object):
+    DETECT_SHAPE_USING_YOLO = "yolo"
+    DETECT_SHAPE_USING_CONTOURS = "contours"
 
 def create_empty_output_folder(images_output_folder):
     isExist = os.path.exists(images_output_folder)
@@ -71,11 +72,37 @@ def detect_shapes_on_frames_from_folder(shape_detection_type, folder_name, creat
         videoClip.write_gif(gif_video_path)
         print(f'Finished creating gif video {gif_video_path}')
 
+def parse_command_line():
+    arg_parser = argparse.ArgumentParser(description="parameters options")
+
+    arg_parser.add_argument('-ifp', '--input_folder_path',
+                            default='robomaster_ep_pov',
+                            nargs='?',
+                            help='Path to input folder of images',
+                            required=False
+                            )
+    arg_parser.add_argument('-sdt', '--shape_detection_type',
+                            default=ShapeDetectionType.DETECT_SHAPE_USING_CONTOURS,
+                            nargs='?',
+                            choices=[ShapeDetectionType.DETECT_SHAPE_USING_CONTOURS,
+                                     ShapeDetectionType.DETECT_SHAPE_USING_YOLO],
+                            help='Algorithm for shape detection (contours/yolo). default set to {0}'.format(ShapeDetectionType.DETECT_SHAPE_USING_CONTOURS),
+                            required=False
+                            )
+    args = arg_parser.parse_args()
+    return args
+
+def print_args():
+    args = parse_command_line()
+    for arg in vars(args):
+        print(arg, "= ", getattr(args, arg))
+
 def main():
-    folder_name = sys.argv[1]
-    shape_detection_type_str = sys.argv[2]
+    args = parse_command_line()
+    print_args()
+    folder_name = args.input_folder_path
+    shape_detection_type_str = args.shape_detection_type
     create_gif_video = False
-    shape_detection_type = getattr(ShapeDetectionType, shape_detection_type_str)
-    detect_shapes_on_frames_from_folder(shape_detection_type, folder_name, create_gif_video)
+    detect_shapes_on_frames_from_folder(shape_detection_type_str, folder_name, create_gif_video)
 
 main()

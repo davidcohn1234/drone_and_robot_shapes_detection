@@ -7,13 +7,13 @@
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
     <option name="SDK_HOME" value="$PROJECT_DIR$/venv/bin/python" />
-    <option name="SDK_NAME" value="Python 3.8 (drone_and_robot_shapes_detection) (2)" />
+    <option name="SDK_NAME" value="Python 3.8 (drone_and_robot_shapes_detection)" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/drone" />
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/drone/script_drone_shapes_detection.py" />
-    <option name="PARAMETERS" value="012_mix" />
+    <option name="PARAMETERS" value="--input_folder_path 012_mix" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />
