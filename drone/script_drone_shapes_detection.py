@@ -57,9 +57,9 @@ def detect_shapes_on_frames_from_folder(folder_name, create_gif_video, main_outp
     for frame_index, jpg_file in enumerate(jpg_files):
         rgb_image = cv2.imread(jpg_file)
         image_data = sd.get_image_data_from_frame(rgb_image)
-        images = sd.get_images_for_debugging(rgb_image)
         if debug_mode:
-            save_images_to_folders(frame_index, images, main_output_folder, folder_name)
+            images_for_debugging = sd.get_images_for_debugging(rgb_image)
+            save_images_to_folders(frame_index, images_for_debugging, main_output_folder, folder_name)
         shapes_data = image_data['shapes_data']
         shapes_boxes = [single_shape_data['shape_box'] for single_shape_data in shapes_data]
         small_shapes_boxes_for_color_detection = [single_shape_data['small_shape_box_for_color_detection'] for single_shape_data in shapes_data]
