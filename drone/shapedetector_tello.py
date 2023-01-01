@@ -127,7 +127,7 @@ class ShapeDetector:
         #     y1 = y
         #     y2 = y1 + h
         #     boxes.append((x1, y1, x2, y2))
-
+        rgb_image_with_data = rgb_image.copy()
         for box in boxes:
             x1 = int(box[0])
             y1 = int(box[1])
@@ -154,20 +154,21 @@ class ShapeDetector:
             #         self.max_screen_height > height > self.min_screen_height:
             # if local_max_square_size > width > local_min_square_size and \
             #         local_max_square_size > height > local_min_square_size:
-            cv2.rectangle(rgb_image, (x1, y1), (x2, y2), box_color, box_thickness)
-            cv2.putText(rgb_image, f'({width},{height})', (x1, y1), font, font_scale, text_color, text_thickness,
-                        cv2.LINE_AA)
-        return rgb_image
+            cv2.rectangle(rgb_image_with_data, (x1, y1), (x2, y2), box_color, box_thickness)
+            # cv2.putText(rgb_image_with_data, f'({width},{height})', (x1, y1), font, font_scale, text_color, text_thickness,
+            #             cv2.LINE_AA)
+        return rgb_image_with_data
 
     def draw_boxes_on_image(self, rgb_image, boxes, box_color, box_thickness):
+        rgb_image_with_data = rgb_image.copy()
         for box in boxes:
             if len(box) == 0:
-                return rgb_image
+                return rgb_image_with_data
             x1 = int(box[0])
             y1 = int(box[1])
             x2 = int(box[2])
             y2 = int(box[3])
-            cv2.rectangle(rgb_image, (x1, y1), (x2, y2), box_color, box_thickness)
+            cv2.rectangle(rgb_image_with_data, (x1, y1), (x2, y2), box_color, box_thickness)
 
             width = x2 - x1
             height = y2 - y1
@@ -175,9 +176,9 @@ class ShapeDetector:
             font_scale = 0.4
             text_color = (0, 0, 0)
             text_thickness = 1
-            cv2.putText(rgb_image, f'({width},{height})', (x1, y1+10), font, font_scale, text_color,
-                        text_thickness, cv2.LINE_AA)
-        return rgb_image
+            # cv2.putText(rgb_image_with_data, f'({width},{height})', (x1, y1+10), font, font_scale, text_color,
+            #             text_thickness, cv2.LINE_AA)
+        return rgb_image_with_data
 
     def draw_shapes_boxes_on_image(self, rgb_image, shapes_boxes):
         shape_box_color = (255, 0, 0)
@@ -892,6 +893,31 @@ class ShapeDetector:
         else:
             return False
 
+    def detect_shapes_boxes_in_required_sizes(self, contours, rgb_image):
+
+        boxes = list()
+        rgb_image_with_data = rgb_image.copy()
+        for single_contour in contours:
+            x, y, w, h = cv2.boundingRect(single_contour)
+            ratio_w_h = w / float(h)
+
+            if self.max_square_size > w > self.min_square_size and \
+                    self.max_square_size > h > self.min_square_size and \
+                    self.max_width_height_ratio > ratio_w_h > (1 / self.max_width_height_ratio):
+                x1 = x
+                x2 = x1 + w
+                y1 = y
+                y2 = y1 + h
+                shape_box_candidate = (x1, y1, x2, y2)
+                rgb_image_with_data = self.draw_boxes_on_image(rgb_image_with_data, [shape_box_candidate],
+                                                                         box_color=(255, 0, 0), box_thickness=2)
+
+                is_shape_legal = self.check_if_image_contains_one_of_the_shapes(rgb_image, shape_box_candidate,
+                                                                                self.template_gray_images)
+                boxes.append(shape_box_candidate)
+        boxes = np.array(boxes)
+        return boxes
+
     def detect_shapes_boxes_in_screen(self, contours, rgb_image):
 
         boxes = list()
@@ -1493,6 +1519,7 @@ class ShapeDetector:
         combined_image_in_row = np.hstack(list_images_in_row)
         return combined_image_in_row
 
+
     def get_combined_images(self, images):
         num_of_images = len(images)
         sqrt_num_of_images = math.sqrt(num_of_images)
@@ -1529,31 +1556,22 @@ class ShapeDetector:
         contours = imutils.grab_contours(findContoursResults)
         return contours
 
-    def get_image_contours(self, rgb_image):
+    def get_images_for_debugging(self, rgb_image):
         gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
-        # gray_image_no_noise = self.remove_noise(gray_image=gray_image, kernel_size=5)
+        gray_image_no_noise = self.remove_noise(gray_image=gray_image, kernel_size=5)
         gray_image_no_noise = gray_image
+
+        binary_image_white_background_with_filled_shapes = cv2.adaptiveThreshold(gray_image_no_noise, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                                              cv2.THRESH_BINARY, 151, 2)
+        binary_image_with_filled_shapes = cv2.bitwise_not(binary_image_white_background_with_filled_shapes)
         binary_image_edges_image = cv2.Canny(image=gray_image_no_noise, threshold1=50,
                                              threshold2=0)
         binary_image_with_complete_lines, rgb_image_with_extra_rgb_lines = self.complete_partial_lines_in_image(
             binary_image_edges_image)
         contours = self.get_contours_from_binary_image(binary_image_edges_image)
         image_edges_3_channels = self.expand_1_channel_image_to_3_channels_image(binary_image_edges_image)
+        binary_image_with_filled_shapes_3_channels = self.expand_1_channel_image_to_3_channels_image(binary_image_with_filled_shapes)
         image_with_contours = image_edges_3_channels.copy()
-
-        # for i in range(len(contours)):
-        #     color = (rng.randint(0, 256), rng.randint(0, 256), rng.randint(0, 256))
-        #     cv2.drawContours(image_with_contours, contours, i, color)
-        #     single_contour = contours[i]
-        #     x, y, w, h = cv2.boundingRect(single_contour)
-        #     # if local_max_screen_width > w > local_min_screen_width and \
-        #     #         local_max_screen_height > h > local_min_screen_height:
-        #     x1 = x
-        #     x2 = x1 + w
-        #     y1 = y
-        #     y2 = y1 + h
-        #     box_thickness = 3
-        #     cv2.rectangle(image_with_contours, (x1, y1), (x2, y2), color, box_thickness)
 
         cv2.drawContours(image_with_contours, contours, -1, (0, 0, 255), 2)
         screen_box = self.detect_screen_box(contours)
@@ -1563,20 +1581,52 @@ class ShapeDetector:
                                                                                   boxes=all_boxes,
                                                                                   box_color=(0, 255, 0),
                                                                                   box_thickness=2)
+        binary_image_3_channels_with_all_boxes = self.draw_boxes_and_write_their_sizes_on_image(rgb_image=image_edges_3_channels,
+                                                                                  boxes=all_boxes,
+                                                                                  box_color=(0, 255, 0),
+                                                                                  box_thickness=2)
 
-        # images = [
-        #     (gray_image, 'gray_image'),
-        #     (gray_image_no_noise, 'gray_image_no_noise'),
-        #     (binary_image_edges_image, 'binary_image_edges_image'),
-        #     (binary_image_with_complete_lines, 'binary_image_with_complete_lines'),
-        #     (rgb_image_with_extra_rgb_lines, 'rgb_image_with_extra_rgb_lines'),
-        #     (rgb_image, 'rgb_image'),
-        #     (image_with_contours, 'image_with_contours'),
-        #     (rgb_image_with_all_boxes, 'rgb_image_with_all_boxes')
-        # ]
-        # combine_images = self.get_combined_images(images)
-        #
-        # cv2.imshow('combine_images', combine_images)
+        contours = self.get_image_contours(rgb_image)
+        boxes_with_shapes_sizes = self.detect_shapes_boxes_in_required_sizes(contours, rgb_image)
+        shapes_boxes = self.detect_shapes_boxes_in_screen(contours, rgb_image)
+        rgb_image_with_boxes_on_shapes_sizes = self.draw_boxes_on_image(rgb_image, boxes_with_shapes_sizes, box_color=(0, 255, 0), box_thickness=2)
+        rgb_image_with_shapes_boxes = self.draw_boxes_on_image(rgb_image, shapes_boxes, box_color=(0, 255, 0), box_thickness=2)
+
+        binary_image_with_filled_shapes_3_channels_with_boxes_of_shapes_sizes = self.draw_boxes_on_image(binary_image_with_filled_shapes_3_channels, boxes_with_shapes_sizes,
+                                                                        box_color=(0, 255, 0), box_thickness=2)
+        binary_image_with_filled_shapes_3_channels_with_shapes_boxes = self.draw_boxes_on_image(binary_image_with_filled_shapes_3_channels, shapes_boxes, box_color=(0, 255, 0),
+                                                               box_thickness=2)
+
+        binary_image_3_channels_with_boxes_of_shapes_sizes = self.draw_boxes_on_image(image_edges_3_channels, boxes_with_shapes_sizes,
+                                                                        box_color=(0, 255, 0), box_thickness=2)
+        binary_image_3_channels_with_shapes_boxes = self.draw_boxes_on_image(image_edges_3_channels, shapes_boxes, box_color=(0, 255, 0),
+                                                               box_thickness=2)
+
+        images = [
+            (gray_image, '01_gray_image'),
+            (gray_image_no_noise, '02_gray_image_no_noise'),
+            (binary_image_edges_image, '03_binary_image_edges_image'),
+            (binary_image_with_complete_lines, '04_binary_image_with_complete_lines'),
+            (rgb_image_with_extra_rgb_lines, '05_rgb_image_with_extra_rgb_lines'),
+            (rgb_image, '06_rgb_image'),
+            (image_with_contours, '07_image_with_contours'),
+            (rgb_image_with_all_boxes, '08_rgb_image_with_all_boxes'),
+            (binary_image_3_channels_with_all_boxes, '09_binary_image_3_channels_with_all_boxes'),
+            (rgb_image_with_boxes_on_shapes_sizes, '10_rgb_image_with_boxes_on_shapes_sizes'),
+            (rgb_image_with_shapes_boxes, '11_rgb_image_with_shapes_boxes'),
+            (binary_image_3_channels_with_boxes_of_shapes_sizes, '12_binary_image_3_channels_with_boxes_of_shapes_sizes'),
+            (binary_image_3_channels_with_shapes_boxes, '13_binary_image_3_channels_with_shapes_boxes'),
+            (binary_image_with_filled_shapes, '14_binary_image_with_filled_shapes'),
+            (binary_image_with_filled_shapes_3_channels_with_boxes_of_shapes_sizes, '15_binary_image_with_filled_shapes_3_channels_with_boxes_of_shapes_sizes'),
+            (binary_image_with_filled_shapes_3_channels_with_shapes_boxes, '16_binary_image_with_filled_shapes_3_channels_with_shapes_boxes')
+        ]
+        combine_images = self.get_combined_images(images)
+        resized_combine_images = self.resize_image(rgb_image=combine_images, scale_percent=40)
+
+        all_images = images + [(resized_combine_images, 'resized_combine_images')]
+
+
+        #cv2.imshow('resized_combine_images', resized_combine_images)
 
         # cv2.imshow('gray_image', gray_image)
         # cv2.imshow('gray_image_no_noise', gray_image_no_noise)
@@ -1585,8 +1635,17 @@ class ShapeDetector:
         # cv2.imshow('binary_image_edges_image', binary_image_edges_image)
         # cv2.imshow('image_with_contours', image_with_contours)
         # cv2.imshow('rgb_image_with_all_boxes', rgb_image_with_all_boxes)
-        # cv2.waitKey(0)
+        # cv2.waitKey(1)
+        return all_images
 
+
+    def get_image_contours(self, rgb_image):
+        gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
+        # gray_image_no_noise = self.remove_noise(gray_image=gray_image, kernel_size=5)
+        gray_image_no_noise = gray_image
+        binary_image_edges_image = cv2.Canny(image=gray_image_no_noise, threshold1=50,
+                                             threshold2=0)
+        contours = self.get_contours_from_binary_image(binary_image_edges_image)
         return contours
 
     def write_shapes_names_on_image(self, rgb_image, shapes_data):

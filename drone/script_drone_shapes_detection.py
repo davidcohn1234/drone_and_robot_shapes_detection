@@ -9,6 +9,21 @@ from moviepy.editor import VideoFileClip
 import argparse
 
 
+def save_images_to_folders(frame_index, images, main_output_folder, folder_name):
+    num_of_images = len(images)
+    debugging_images_folder_name = 'debugging_images'
+    for image_index in range(num_of_images):
+        current_image = images[image_index][0]
+        current_folder_name = images[image_index][1]
+        images_output_folder = main_output_folder + '/' + debugging_images_folder_name + '/' + folder_name + '/' + current_folder_name
+        isExist = os.path.exists(images_output_folder)
+        if not isExist:
+            os.makedirs(images_output_folder)
+        file_full_path = "{}/{:05d}.jpg".format(images_output_folder, frame_index+1)
+        cv2.imwrite(file_full_path, current_image)
+
+
+
 def create_empty_output_folder(images_output_folder):
     isExist = os.path.exists(images_output_folder)
     if not isExist:
@@ -18,19 +33,19 @@ def create_empty_output_folder(images_output_folder):
         for f in files:
             os.remove(f)
 
-def detect_shapes_on_frames_from_folder(folder_name, create_gif_video):
+def detect_shapes_on_frames_from_folder(folder_name, create_gif_video, main_output_folder):
     sd = ShapeDetector()
     if not sd.tesseract_exists:
         print('You need to install tesseract!')
         return
     input_folder_full_path = f'./input_data/' + folder_name
-    # input_file_name = '00542.jpg'
-    # image_full_path = input_folder_full_path + '/' + input_file_name
+    input_file_name = '00277.jpg'
+    image_full_path = input_folder_full_path + '/' + input_file_name
     jpg_files = sorted(glob.glob(input_folder_full_path + '/*.jpg'))
-    #jpg_files = [image_full_path]
-    frame_milliseconds = 1
+    jpg_files = [image_full_path]
+    frame_milliseconds = 0
 
-    main_output_folder = './output'
+
     main_images_output_folder = main_output_folder + '/' + 'images'
     videos_output_folder = main_output_folder + '/' + 'videos'
     images_output_folder = main_images_output_folder + '/' + folder_name
@@ -40,6 +55,8 @@ def detect_shapes_on_frames_from_folder(folder_name, create_gif_video):
     for frame_index, jpg_file in enumerate(jpg_files):
         rgb_image = cv2.imread(jpg_file)
         image_data = sd.get_image_data_from_frame(rgb_image)
+        images = sd.get_images_for_debugging(rgb_image)
+        save_images_to_folders(frame_index, images, main_output_folder, folder_name)
         shapes_data = image_data['shapes_data']
         shapes_boxes = [single_shape_data['shape_box'] for single_shape_data in shapes_data]
         small_shapes_boxes_for_color_detection = [single_shape_data['small_shape_box_for_color_detection'] for single_shape_data in shapes_data]
@@ -113,6 +130,7 @@ def main():
     print_args()
     folder_name = args.input_folder_path
     create_gif_video = False
-    detect_shapes_on_frames_from_folder(folder_name, create_gif_video)
+    main_output_folder = './output'
+    detect_shapes_on_frames_from_folder(folder_name, create_gif_video, main_output_folder)
 
 main()

@@ -1,7 +1,6 @@
 import cv2
 import os
 import glob
-from enum import Enum
 from shapedetector_robot_yolo import ShapeDetectorYolo
 from shapedetector_robot_contours import ShapeDetectorContours
 import sys
@@ -94,7 +93,8 @@ def parse_command_line():
 
 def print_args():
     args = parse_command_line()
-    for arg in vars(args):
+    vars_args = vars(args)
+    for arg in vars_args:
         print(arg, "= ", getattr(args, arg))
 
 def main():
